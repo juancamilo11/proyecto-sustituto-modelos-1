@@ -98,6 +98,7 @@ Este proyecto será adaptado para funcionar como un servicio API REST que permit
 Integrantes
 -----------------
 Cardona Calderón Maria Carolina
+
 Cardona Calderón Juan Camilo
 
 **Curso**: Modelos 1 - Facultad de Ingeniería - Universidad de Antioquia
