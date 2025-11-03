@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ml_model
+    # container_name: ml_model
     volumes:
       - .:/app
     working_dir: /app
