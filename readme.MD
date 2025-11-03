@@ -1,4 +1,3 @@
-
 Proyecto Sustituto | Modelos 1 | Entrega 1
 ==============================
 
@@ -59,6 +58,40 @@ Ejecuta la siguiente celda para instalar las librerías necesarias:
 3.  Selecciona el archivo `kaggle.json` que descargaste
 
 ### Listo, ya se tiene todo el ambiente listo para el entrenamiendo y las predicciones.
+
+---------------------
+
+
+Proyecto Sustituto | Modelos 1 | Entrega 2
+==============================
+
+Ejecución con Docker
+---------------------
+
+### Scripts:
+
+*   **train.py**: Entrena el modelo DecisionTreeClassifier con los datos de `train.csv` y guarda el modelo en `model.pkl`
+*   **predict.py**: Carga el modelo entrenado y genera predicciones sobre `test.csv`, guardando los resultados en `predictions.csv`
+
+### Uso:
+
+```bash
+# Construir imagen
+docker-compose build
+
+# Entrenar modelo
+docker-compose run --rm train
+
+# Generar predicciones
+docker-compose run --rm predict
+```
+
+### Archivos Docker:
+
+**Dockerfile**: Imagen Python 3.10 con dependencias (numpy, pandas, scikit-learn, loguru)
+
+**docker-compose.yml**: Define servicios `train` y `predict` con configuración de volúmenes y comandos
+
 
 Desarrollo Futuro: API REST
 ------------------------------
