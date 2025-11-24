@@ -1,0 +1,39 @@
+version: "3.9"
+name: ml_entrega_3_api
+
+services:
+  ml_model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
+
+  # train:
+  #   extends:
+  #     service: ml_model
+  #   command: >
+  #     python3 train.py
+  #     --data_file train.csv
+  #     --model_file model.pkl
+  #     --overwrite_model
+
+  # predict:
+  #   extends:
+  #     service: ml_model
+  #   command: >
+  #     python3 predict.py
+  #     --input_file test.csv
+  #     --predictions_file predictions.csv
+  #     --model_file model.pkl
+
+  api:
+    extends:
+      service: ml_model
+    command: python3 apirest.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
