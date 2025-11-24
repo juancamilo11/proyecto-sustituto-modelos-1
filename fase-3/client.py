@@ -3,13 +3,13 @@ import json
 
 BASE_URL = 'http://localhost:5000'
 
-# print("\n1. Probando endpoint raíz (GET /)...")
-# response = requests.get(f"{BASE_URL}/")
-# print(f"Status: {response.status_code}")
-# print(f"Response: {json.dumps(response.json(), indent=2)}")
+print("\n1. Probando endpoint raíz (GET /)...")
+response = requests.get(f"{BASE_URL}/")
+print(f"Status: {response.status_code}")
+print(f"Response: {json.dumps(response.json(), indent=2)}")
 
 
-# print("\n2. Entrenando modelo (POST /train)...")
+print("\n2. Entrenando modelo (POST /train)...")
 
 data = {
     "model_file": "model.pkl",
@@ -21,7 +21,7 @@ data = {
 
 response = requests.post(
     f"{BASE_URL}/train",
-    json=data
+    data=data
 )
 
 print(f"Status: {response.status_code}")
@@ -32,21 +32,20 @@ except:
 
 
 
-# print("\n3. Haciendo predicciones del modelo (POST /predict)...")
+print("\n3. Haciendo predicciones del modelo (POST /predict)...")
 
-# data = {
-#   "model_file": "model.pkl",
-# }
+data = {
+    "model_file": "model.pkl",
+}
 
-# response = requests.post(
-#     f"{BASE_URL}/predict",
-#     json=data
-# )
+response = requests.post(
+    f"{BASE_URL}/predict",
+    data=data
+)
 
-# print(f"Status: {response.status_code}")
-# try:
-#     print(f"Response: {json.dumps(response.json(), indent=2)}")
-# except:
-#     print("No se recibió JSON válido")
-
+print(f"Status: {response.status_code}")
+try:
+    print(f"Response: {json.dumps(response.json(), indent=2)}")
+except:
+    print("No se recibió JSON válido")
 
