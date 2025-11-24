@@ -30,6 +30,7 @@ services:
   #     --model_file model.pkl
 
   api:
+    restart: always
     extends:
       service: ml_model
     command: python3 apirest.py

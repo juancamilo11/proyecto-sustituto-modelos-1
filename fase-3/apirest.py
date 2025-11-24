@@ -7,6 +7,7 @@ from loguru import logger
 import subprocess
 
 from train import train_model
+from predict import predict_from_model
 
 app = Flask(__name__)
 
@@ -19,50 +20,62 @@ def hello_world():
       "endpoints": ["/predict", "/train"]
   })
 
-@app.route("/train", methods=["POST"])
+@app.route("/train-model", methods=["POST"])
 def train():
-    try:
-        model_file = request.form.get("model_file")
-        if not model_file:
-            return jsonify({"error": "Falta 'model_file'"}), 400
+  try:
+      data = request.get_json()
 
-        overwrite_model = request.form.get("overwrite_model", "false").lower() == "true"
-        max_depth = int(request.form.get("max_depth", 3))
-        random_state = int(request.form.get("random_state", 42))
-        train_size = float(request.form.get("train_size", 0.8))
+      if not data:
+          return jsonify({"error": "El body debe ser JSON"}), 400
 
-        result = train_model(
-            model_file=model_file,
-            overwrite_model=overwrite_model,
-            max_depth=max_depth,
-            random_state=random_state,
-            train_size=train_size
-        )
+      model_file = data.get("model_file")
+      if not model_file:
+          return jsonify({"error": "Falta 'model_file'"}), 400
 
-        return jsonify({
-            "message": "Modelo entrenado y guardado correctamente",
-            **result
-        })
+      overwrite_model = bool(data.get("overwrite_model", False))
+      max_depth = int(data.get("max_depth", 3))
+      random_state = int(data.get("random_state", 42))
+      train_size = float(data.get("train_size", 0.8))
 
-    except Exception as e:
-        logger.exception("Error en /train")
-        return jsonify({"error": str(e)}), 500
+      result = train_model(
+          model_file=model_file,
+          overwrite_model=overwrite_model,
+          max_depth=max_depth,
+          random_state=random_state,
+          train_size=train_size
+      )
+
+      return jsonify({
+          "message": "Modelo entrenado y guardado correctamente",
+          **result
+      })
+
+  except Exception as e:
+      logger.exception("Error en /train")
+      return jsonify({"error": str(e)}), 500
 
 
-
-
-@app.route("/predict", methods=['POST'])
+@app.route("/predict-model", methods=["POST"])
 def predict():
-    try:
-      if not os.path.isfile(MODEL_FILE):
-        return jsonify({'error': f'Modelo {MODEL_FILE} no existe. Ejecute /train primero'}), 400
+  try:
+    data = request.get_json()
 
-      
-          
-    except Exception as e:
-        logger.error(f"Error en predicción: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+    if not data:
+        return jsonify({"error": "El body debe ser JSON"}), 400
 
+    model_file = data.get("model_file")
+    if not model_file:
+        return jsonify({"error": "Falta 'model_file'"}), 400
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    result = predict_from_model(
+        model_file=model_file,
+    )
+
+    return jsonify({
+        "message": "Predicción realizada correctamente",
+        **result
+    })
+
+  except Exception as e:
+      logger.exception("Error en /predict")
+      return jsonify({"error": str(e)}), 500

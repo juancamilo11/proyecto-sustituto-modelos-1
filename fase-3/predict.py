@@ -7,15 +7,13 @@ from loguru import logger
 
 
 def predict_from_model(
-     model_file,
+  model_file
 ):
   if not os.path.isfile(model_file):
-      logger.error(f"El archivo del modelo {model_file} no existe")
-      exit(-1)
+      raise FileExistsError(f"El archivo del modelo {model_file} no existe")
 
   if not os.path.isfile("test.csv"):
-      logger.error(f"El archivo de entrada test.csv no existe")
-      exit(-1)
+      raise FileExistsError(f"El archivo de entrada test.csv no existe")
 
   logger.info(f"Cargando datos de entrada desde test.csv")
   zt = pd.read_csv("test.csv")
@@ -86,12 +84,10 @@ def predict_from_model(
       'RENDIMIENTO_GLOBAL': text_preds
   })
 
-  logger.info(f"Guardando predicciones en {predictions_file}")
-  predictions_df.to_csv(predictions_file, index=False)
-  logger.success(f"Predicciones guardadas exitosamente: {len(predictions_df)} registros")
+  summary = predictions_df["RENDIMIENTO_GLOBAL"].value_counts().to_dict()
 
-  logger.info("\nResumen de predicciones:")
-  for category, count in predictions_df['RENDIMIENTO_GLOBAL'].value_counts().items():
-      logger.info(f"  {category}: {count} ({count/len(predictions_df)*100:.2f}%)")
-
-  logger.success("Proceso completado exitosamente")
+  return {
+      "total": len(predictions_df),
+      "summary": summary,
+      "predictions": predictions_df.to_dict(orient="records")
+  }
