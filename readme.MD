@@ -1,5 +1,4 @@
-Proyecto Sustituto | Modelos 1 | Entrega 1
-==============================
+# Proyecto Sustituto | Modelos 1 | Entrega 3
 
 **Proyecto del Curso:** Predicción de Rendimiento Académico con Machine Learning
 --------------------------------------------------------
@@ -7,8 +6,7 @@ Proyecto Sustituto | Modelos 1 | Entrega 1
 Este proyecto implementa un modelo de Machine Learning para predecir el rendimiento académico global de estudiantes basándose en características demográficas y socioeconómicas.
 
 
-Descripción del Proyecto
----------------------------
+## Descripción del Proyecto
 
 El modelo predice el `RENDIMIENTO_GLOBAL` de estudiantes en 4 categorías:
 
@@ -23,8 +21,7 @@ El modelo predice el `RENDIMIENTO_GLOBAL` de estudiantes en 4 categorías:
 *   `FAMI_ESTRATOVIVIENDA`: Estrato socioeconómico de la vivienda
 
 
-Ejecución en Google Colab
-----------------------------
+## Ejecución en Google Colab
 
 ### Paso 1: Abrir Google Colab
 
@@ -57,21 +54,17 @@ Ejecuta la siguiente celda para instalar las librerías necesarias:
 2.  Haz clic en el botón **Upload** (subir)
 3.  Selecciona el archivo `kaggle.json` que descargaste
 
-### Listo, ya se tiene todo el ambiente listo para el entrenamiendo y las predicciones.
+### Listo, ya se tiene todo el ambiente listo para el entrenamiento y las predicciones.
 
 ---------------------
 
 
-Proyecto Sustituto | Modelos 1 | Entrega 2
-==============================
-
-Ejecución con Docker
----------------------
+## Ejecución con Docker
 
 ### Scripts:
 
 *   **train.py**: Entrena el modelo DecisionTreeClassifier con los datos de `train.csv` y guarda el modelo en `model.pkl`
-*   **predict.py**: Carga el modelo entrenado y genera predicciones sobre `test.csv`, guardando los resultados en `predictions.csv`
+*   **predict.py**: Carga el modelo entrenado y genera predicciones sobre `test.csv`
 
 ### Uso:
 
@@ -88,48 +81,108 @@ docker-compose run --rm predict
 
 ### Archivos Docker:
 
-**Dockerfile**: Imagen Python 3.10 con dependencias (numpy, pandas, scikit-learn, loguru)
+**Dockerfile**: Imagen Python 3.10 con dependencias (numpy, pandas, scikit-learn, loguru, flask)
 
-**docker-compose.yml**: Define servicios `train` y `predict` con configuración de volúmenes y comandos
+**docker-compose.yml**: Define servicios para la API REST
 
 
-Desarrollo Futuro: API REST
-------------------------------
+---------------------
 
-Este proyecto será adaptado para funcionar como un servicio API REST que permitirá:
 
-### Endpoints planificados:
+## API REST (Entrega 3)
 
-1.  **POST /api/train**
-    *   Entrenar el modelo con nuevos datos
-    *   Parámetros de configuración del modelo
-2.  **POST /api/test**
-    *   Realizar predicciones individuales o por lotes
-    *   Input: características del estudiante
-    *   Output: predicción de rendimiento
+El proyecto ahora incluye una API REST construida con Flask que permite entrenar el modelo y realizar predicciones mediante endpoints HTTP.
 
-### Tecnologías a utilizar:
+### Iniciar la API:
 
-*   **FastAPI** o **Flask** para el backend
-*   **Docker** para containerización
-*   **PostgreSQL** (En caso de ser necesario) para persistencia de datos
+```bash
+# Levantar el servicio API
+docker-compose up api --build
 
-### Arquitectura propuesta:
+# La API estará disponible en http://localhost:5000
+```
 
-    Cliente (Web/Mobile)
-        ↓
-        Proxy reverso de NGINX
-        ↓
-    FastAPI Backend
-        ↓
-    ├── Servicio de Entrenamiento
-    ├── Servicio de Predicción
-    └── Base de Datos (En caso de ser necesario)
+### Endpoints disponibles:
 
------------------
+#### 1. **GET /**
+Información básica de la API
 
-Integrantes
------------------
+```bash
+curl http://localhost:5000/
+```
+
+#### 2. **POST /train**
+Entrena el modelo con los datos de `train.csv`
+
+**Parámetros:**
+- `model_file`: Nombre del archivo del modelo (requerido)
+- `overwrite_model`: Sobrescribir modelo existente (true/false, default: false)
+- `max_depth`: Profundidad máxima del árbol (default: 3)
+- `random_state`: Semilla aleatoria (default: 42)
+- `train_size`: Proporción de datos de entrenamiento (default: 0.8)
+
+**Ejemplo:**
+
+```bash
+curl -X POST http://localhost:5000/train \
+  -F "model_file=model.pkl" \
+  -F "overwrite_model=true" \
+  -F "max_depth=3" \
+  -F "random_state=42" \
+  -F "train_size=0.8"
+```
+
+#### 3. **POST /predict**
+Genera predicciones sobre los datos de `test.csv`
+
+**Parámetros:**
+- `model_file`: Nombre del archivo del modelo (requerido)
+
+**Ejemplo:**
+
+```bash
+curl -X POST http://localhost:5000/predict \
+  -F "model_file=model.pkl"
+```
+
+**Respuesta:** JSON con el total de predicciones, resumen por categoría y lista completa de predicciones con IDs.
+
+### Cliente de prueba:
+
+Se incluye el script `client.py` para probar todos los endpoints:
+
+```bash
+python client.py
+```
+
+Este script realiza las siguientes operaciones:
+1. Consulta el endpoint raíz
+2. Entrena el modelo
+3. Genera predicciones
+
+---------------------
+
+
+## Estructura del Proyecto
+
+```
+.
+├── train.py              # Script de entrenamiento
+├── predict.py            # Script de predicción
+├── apirest.py            # API REST con Flask
+├── client.py             # Cliente de prueba para la API
+├── Dockerfile            # Imagen Docker
+├── docker-compose.yaml   # Configuración de servicios
+├── train.csv             # Datos de entrenamiento
+├── test.csv              # Datos de prueba
+└── model.pkl             # Modelo entrenado (generado)
+```
+
+---------------------
+
+
+## Integrantes
+
 Cardona Calderón Maria Carolina
 
 Cardona Calderón Juan Camilo
